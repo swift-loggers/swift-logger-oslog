@@ -37,6 +37,16 @@ let package = Package(
 
 ## Usage
 
+A service holds a `Logger`. At startup an `OSLogLogger` is created
+and passed in; the same protocol carries plain strings, privacy-aware
+interpolation, and structured attributes, and the OSLog adapter
+forwards every shape to `os.Logger` after redacting privacy-annotated
+content.
+
+Use a reverse-DNS `subsystem` for the app or library that owns the
+logs. `minimumLevel` is the emission threshold; entries below it are
+dropped before their message or attributes are evaluated.
+
 ```swift
 import LoggerOSLog
 import Loggers
@@ -45,17 +55,50 @@ extension LoggerDomain {
     static let auth: LoggerDomain = "Auth"
 }
 
+struct AuthService {
+    let logger: any Loggers.Logger
+
+    func signOut() {
+        logger.info(.auth, "User signed out")
+    }
+
+    func validate(username: String) {
+        logger.debug(
+            .auth,
+            "Validating input for \(username, privacy: .private)"
+        )
+    }
+
+    func signIn(username: String, password _: String) {
+        let success = true
+        logger.info(
+            .auth,
+            "Sign-in \(success ? "succeeded" : "failed")",
+            attributes: [
+                LogAttribute("auth.method", "password"),
+                LogAttribute("auth.success", success),
+                LogAttribute("auth.username", username, privacy: .private)
+            ]
+        )
+        // Password is bound to `_` so the service never even names it
+        // when logging; an HTTP client downstream owns the network
+        // call and any HTTP-level logging.
+    }
+}
+
 let logger: any Loggers.Logger = OSLogLogger(
     subsystem: "com.example.app",
-    minimumLevel: .info
+    minimumLevel: .debug
 )
 
-logger.info(.auth, "User signed in")
-```
+let authService = AuthService(logger: logger)
 
-`LoggerDomain` becomes the OSLog `category`, the level maps onto
-`OSLogType`, and the message and attributes are rendered as a single
-privacy-safe text line before reaching `os.Logger`.
+func runAuthLoggingExample() {
+    authService.signOut()
+    authService.validate(username: "alice")
+    authService.signIn(username: "alice", password: "not-logged")
+}
+```
 
 ## Mapping
 
@@ -82,11 +125,11 @@ through `OSLogType` only.
 `LogMessage.redactedDescription` and `LogAttribute.redactedDescription`
 before reaching `os.Logger`:
 
-| Privacy       | Rendering             |
-|---------------|-----------------------|
+| Privacy       | Rendering              |
+|---------------|------------------------|
 | `.public`     | segment value verbatim |
-| `.private`    | `<private>`           |
-| `.sensitive`  | `<redacted>`          |
+| `.private`    | `<private>`            |
+| `.sensitive`  | `<redacted>`           |
 
 The redacted text is then passed to `os.Logger` with a compile-time
 `\(text, privacy: .public)` interpolation, which is safe because the
