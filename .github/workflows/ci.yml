@@ -45,7 +45,7 @@ jobs:
   lint:
     name: Lint
     needs: changes
-    if: needs.changes.outputs.ci_relevant == 'true'
+    if: needs.changes.outputs.ci_relevant == 'true' || github.event.action == 'ready_for_review'
     runs-on: macos-latest
     timeout-minutes: 10
     steps:
@@ -84,7 +84,7 @@ jobs:
   test:
     name: Test (strict concurrency)
     needs: changes
-    if: needs.changes.outputs.ci_relevant == 'true'
+    if: needs.changes.outputs.ci_relevant == 'true' || github.event.action == 'ready_for_review'
     runs-on: macos-latest
     timeout-minutes: 10
     steps:
@@ -101,7 +101,7 @@ jobs:
   build-release:
     name: Build (release)
     needs: changes
-    if: needs.changes.outputs.ci_relevant == 'true'
+    if: needs.changes.outputs.ci_relevant == 'true' || github.event.action == 'ready_for_review'
     runs-on: macos-latest
     timeout-minutes: 10
     steps:
@@ -118,7 +118,7 @@ jobs:
   library-evolution:
     name: Build (library evolution)
     needs: changes
-    if: needs.changes.outputs.ci_relevant == 'true'
+    if: needs.changes.outputs.ci_relevant == 'true' || github.event.action == 'ready_for_review'
     runs-on: macos-latest
     timeout-minutes: 10
     steps:
@@ -135,7 +135,7 @@ jobs:
   docc:
     name: DocC (${{ matrix.product }})
     needs: changes
-    if: github.event_name == 'pull_request' && needs.changes.outputs.ci_relevant == 'true'
+    if: github.event_name == 'pull_request' && (needs.changes.outputs.ci_relevant == 'true' || github.event.action == 'ready_for_review')
     runs-on: macos-latest
     timeout-minutes: 10
     strategy:
