@@ -12,6 +12,9 @@ forwards entries through
 Requires Swift 6.0+. iOS 14, macOS 11, tvOS 14, watchOS 7, visionOS 1.
 MIT licensed. Pre-release; the first tagged version will be `0.1.0`.
 
+API reference (DocC, generated from `main`):
+[swift-loggers.github.io/swift-logger-oslog](https://swift-loggers.github.io/swift-logger-oslog/documentation/loggeroslog/).
+
 ## Installation
 
 ```swift

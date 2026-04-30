@@ -135,7 +135,7 @@ jobs:
   docc:
     name: DocC (${{ matrix.product }})
     needs: changes
-    if: needs.changes.outputs.ci_relevant == 'true'
+    if: github.event_name == 'pull_request' && needs.changes.outputs.ci_relevant == 'true'
     runs-on: macos-latest
     timeout-minutes: 10
     strategy:
