@@ -1,8 +1,9 @@
 import Foundation
-import LoggerOSLog
 import Loggers
 import os
 import Testing
+
+@testable import LoggerOSLog
 
 private final class CallCounter: @unchecked Sendable {
     private let lock = NSLock()

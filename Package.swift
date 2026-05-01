@@ -17,7 +17,7 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/swift-loggers/swift-logger.git", branch: "main"),
+        .package(url: "https://github.com/swift-loggers/swift-logger.git", from: "0.1.0"),
         .package(url: "https://github.com/apple/swift-docc-plugin.git", from: "1.0.0")
     ],
     targets: [

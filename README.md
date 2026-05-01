@@ -10,9 +10,9 @@ forwards entries through
 [`os.Logger`](https://developer.apple.com/documentation/os/logger).
 
 Requires Swift 6.0+. iOS 14, macOS 11, tvOS 14, watchOS 7, visionOS 1.
-MIT licensed. Pre-release; the first tagged version will be `0.1.0`.
+MIT licensed.
 
-API reference (DocC, generated from `main`):
+API reference:
 [swift-loggers.github.io/swift-logger-oslog](https://swift-loggers.github.io/swift-logger-oslog/documentation/loggeroslog/).
 
 ## Installation
@@ -22,7 +22,7 @@ API reference (DocC, generated from `main`):
 let package = Package(
     name: "MyApp",
     dependencies: [
-        .package(url: "https://github.com/swift-loggers/swift-logger-oslog.git", branch: "main")
+        .package(url: "https://github.com/swift-loggers/swift-logger-oslog.git", from: "0.1.0")
     ],
     targets: [
         .target(
@@ -34,6 +34,11 @@ let package = Package(
     ]
 )
 ```
+
+The example uses SwiftPM's `from:` requirement, so consumers
+follow tagged releases starting at `0.1.0` (up to but not
+including the next major version). Applications that require a
+fully pinned dependency can use `exact: "0.1.0"` instead.
 
 ## Usage
 
@@ -145,9 +150,11 @@ dynamic data. True OSLog interpolation privacy (`%{public}s` /
 `os.Logger` directly with a literal interpolation; that path is
 intentionally outside the universal `Logger` contract.
 
-## Companion packages
+## Related packages
 
 - [`swift-loggers/swift-logger`](https://github.com/swift-loggers/swift-logger)
-  -- protocol-only core plus `PrintLogger`, `DomainFilteredLogger`,
-  `NoOpLogger`. The `Logger` protocol, `LogMessage`, `LogAttribute`,
-  `LoggerLevel`, and `LoggerDomain` are all defined there.
+  -- the core ecosystem package. It provides the core logging
+  abstractions in the `Loggers` product, along with the built-in
+  companion adapters (`LoggerPrint`, `LoggerFiltering`,
+  `LoggerNoOp`) and the `LoggerLibrary` umbrella product that
+  re-exports them for consumer-facing use.
