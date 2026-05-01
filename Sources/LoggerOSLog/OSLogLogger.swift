@@ -130,11 +130,12 @@ public struct OSLogLogger: Loggers.Logger {
         )
     }
 
-    /// Creates an `OSLogLogger` with a custom emit sink.
-    ///
-    /// This initializer exists primarily for testing; it lets a test
-    /// inject a recording closure in place of `os.Logger`. Production
-    /// call sites should use the public initializer above.
+    /// Creates an `OSLogLogger` with a custom emit sink. This
+    /// initializer is internal so production callers cannot depend on
+    /// a private seam, while test targets can reach it via
+    /// `@testable import LoggerOSLog` to record what would otherwise
+    /// reach `os.Logger`. The public surface stays at
+    /// ``init(subsystem:minimumLevel:)``.
     ///
     /// - Parameters:
     ///   - subsystem: The OSLog subsystem identifier. Stored on the
@@ -146,7 +147,7 @@ public struct OSLogLogger: Loggers.Logger {
     ///   - emit: Receives every entry that passes the drop guard. The
     ///     closure must be `@Sendable`; the entry is already rendered
     ///     to a privacy-safe `String` before it reaches the closure.
-    public init(
+    init(
         subsystem: String,
         minimumLevel: MinimumLevel = .defaultLevel,
         emit: @escaping @Sendable (LoggerDomain, OSLogType, String) -> Void
